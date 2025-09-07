@@ -16,6 +16,7 @@ helm repo update
 | Chart | Description | Version | Status |
 |-------|-------------|---------|--------|
 | [vrising](./vrising/) | VRising game server | 0.2.0 | ✅ Active |
+| [factorio](./factorio/) | Factorio game server | 0.1.0 | ✅ Active |
 
 ## 🎮 Supported Game Servers
 
@@ -29,6 +30,18 @@ helm repo update
 **Quick Install:**
 ```bash
 helm install my-vrising spensireli/vrising
+```
+
+### Factorio
+- **Chart Name**: `factorio-chart`
+- **Game Type**: Factory Building/Automation
+- **Port**: 34197 (UDP)
+- **Persistent Storage**: ✅ Supported
+- **Documentation**: [Factorio Chart README](./factorio/README.md)
+
+**Quick Install:**
+```bash
+helm install my-factorio spensireli/factorio-chart
 ```
 
 ## 📋 General Features
