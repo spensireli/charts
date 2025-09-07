@@ -15,14 +15,14 @@ helm repo update
 
 ```bash
 # Basic installation
-helm install my-vrising spensir/vrising-chart
+helm install my-vrising spensir/vrising
 
 # With custom server name
-helm install my-vrising spensir/vrising-chart \
+helm install my-vrising spensir/vrising \
   --set vrising.env.SERVERNAME="My Awesome VRising Server"
 
 # With custom storage sizes
-helm install my-vrising spensir/vrising-chart \
+helm install my-vrising spensir/vrising \
   --set vrising.persistence.server.size=20Gi \
   --set vrising.persistence.world.size=10Gi
 ```
@@ -48,7 +48,7 @@ helm install my-vrising spensir/vrising-chart \
 After installation, get the external IP:
 
 ```bash
-kubectl get service my-vrising-vrising-chart
+kubectl get service my-vrising-vrising
 ```
 
 Connect to your VRising server using:
@@ -90,13 +90,13 @@ resources:
 Install with custom values:
 
 ```bash
-helm install my-vrising spensir/vrising-chart -f values.yaml
+helm install my-vrising spensir/vrising -f values.yaml
 ```
 
 ### Using Existing Persistent Volume Claims
 
 ```bash
-helm install my-vrising spensir/vrising-chart \
+helm install my-vrising spensir/vrising \
   --set vrising.persistence.server.existingClaim=my-server-pvc \
   --set vrising.persistence.world.existingClaim=my-world-pvc
 ```
@@ -105,7 +105,7 @@ helm install my-vrising spensir/vrising-chart \
 
 ```bash
 helm repo update
-helm upgrade my-vrising spensir/vrising-chart
+helm upgrade my-vrising spensir/vrising
 ```
 
 ## 🗑️ Uninstalling
@@ -117,8 +117,8 @@ helm uninstall my-vrising
 **Note**: This will not delete persistent volume claims. Delete them manually if needed:
 
 ```bash
-kubectl delete pvc my-vrising-vrising-chart-server
-kubectl delete pvc my-vrising-vrising-chart-world
+kubectl delete pvc my-vrising-vrising-server
+kubectl delete pvc my-vrising-vrising-world
 ```
 
 ## 📖 Chart Information
