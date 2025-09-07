@@ -7,7 +7,7 @@ A collection of Helm charts for deploying various game servers on Kubernetes.
 ### Add the Helm Repository
 
 ```bash
-helm repo add spensir https://spensir.github.io/charts
+helm repo add spensireli https://spensireli.github.io/charts
 helm repo update
 ```
 
@@ -28,7 +28,7 @@ helm repo update
 
 **Quick Install:**
 ```bash
-helm install my-vrising spensir/vrising
+helm install my-vrising spensireli/vrising
 ```
 
 ## 📋 General Features
@@ -47,16 +47,16 @@ All charts in this repository provide:
 ### Basic Installation
 ```bash
 # Install any game server
-helm install <release-name> spensir/<chart-name>
+helm install <release-name> spensireli/<chart-name>
 ```
 
 ### Custom Configuration
 ```bash
 # Install with custom values file
-helm install <release-name> spensir/<chart-name> -f my-values.yaml
+helm install <release-name> spensireli/<chart-name> -f my-values.yaml
 
 # Install with inline configuration
-helm install <release-name> spensir/<chart-name> \
+helm install <release-name> spensireli/<chart-name> \
   --set service.type=NodePort \
   --set persistence.size=50Gi
 ```
@@ -64,7 +64,7 @@ helm install <release-name> spensir/<chart-name> \
 ### Upgrading
 ```bash
 helm repo update
-helm upgrade <release-name> spensir/<chart-name>
+helm upgrade <release-name> spensireli/<chart-name>
 ```
 
 ## 🚀 Automated Publishing
@@ -73,8 +73,8 @@ Charts are automatically packaged and published using GitHub Actions when change
 
 ## 📖 Repository Information
 
-- **Repository URL**: https://spensir.github.io/charts
-- **Source Code**: [GitHub](https://github.com/spensir/charts)
+- **Repository URL**: https://spensireli.github.io/charts
+- **Source Code**: [GitHub](https://github.com/spensireli/charts)
 - **Chart Releaser**: Automated via GitHub Actions
 - **Storage**: GitHub Pages
 

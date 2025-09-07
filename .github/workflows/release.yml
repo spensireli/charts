@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate index
         run: |
-          helm repo index .cr-release-packages --url https://spensir.github.io/charts
+          helm repo index .cr-release-packages --url https://spensireli.github.io/charts
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

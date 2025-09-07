@@ -7,7 +7,7 @@ A Helm chart for deploying VRising game servers on Kubernetes.
 ### Add the Helm Repository
 
 ```bash
-helm repo add spensir https://spensir.github.io/charts
+helm repo add spensireli https://spensireli.github.io/charts
 helm repo update
 ```
 
@@ -15,14 +15,14 @@ helm repo update
 
 ```bash
 # Basic installation
-helm install my-vrising spensir/vrising
+helm install my-vrising spensireli/vrising
 
 # With custom server name
-helm install my-vrising spensir/vrising \
+helm install my-vrising spensireli/vrising \
   --set vrising.env.SERVERNAME="My Awesome VRising Server"
 
 # With custom storage sizes
-helm install my-vrising spensir/vrising \
+helm install my-vrising spensireli/vrising \
   --set vrising.persistence.server.size=20Gi \
   --set vrising.persistence.world.size=10Gi
 ```
@@ -90,13 +90,13 @@ resources:
 Install with custom values:
 
 ```bash
-helm install my-vrising spensir/vrising -f values.yaml
+helm install my-vrising spensireli/vrising -f values.yaml
 ```
 
 ### Using Existing Persistent Volume Claims
 
 ```bash
-helm install my-vrising spensir/vrising \
+helm install my-vrising spensireli/vrising \
   --set vrising.persistence.server.existingClaim=my-server-pvc \
   --set vrising.persistence.world.existingClaim=my-world-pvc
 ```
@@ -105,7 +105,7 @@ helm install my-vrising spensir/vrising \
 
 ```bash
 helm repo update
-helm upgrade my-vrising spensir/vrising
+helm upgrade my-vrising spensireli/vrising
 ```
 
 ## 🗑️ Uninstalling
