@@ -5,7 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'vrising/**'
+      - '**/Chart.yaml'
+      - '**/values.yaml' 
+      - '**/templates/**'
   workflow_dispatch:
 
 jobs:
@@ -39,7 +41,15 @@ jobs:
       - name: Package charts
         run: |
           mkdir -p .cr-release-packages
-          helm package vrising/vrising-chart -d .cr-release-packages
+          for chart_dir in */; do
+            if [ -d "$chart_dir" ] && [ "$chart_dir" != ".github/" ]; then
+              chart_name=$(basename "$chart_dir")
+              if [ -d "$chart_dir/$chart_name-chart" ]; then
+                echo "Packaging $chart_name chart..."
+                helm package "$chart_dir/$chart_name-chart" -d .cr-release-packages
+              fi
+            fi
+          done
 
       - name: Generate index
         run: |
