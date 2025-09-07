@@ -1,6 +1,6 @@
-# VRising Helm Charts
+# Game Server Helm Charts
 
-This repository contains Helm charts for deploying VRising game servers on Kubernetes.
+A collection of Helm charts for deploying various game servers on Kubernetes.
 
 ## 🚀 Quick Start
 
@@ -11,123 +11,92 @@ helm repo add spensir https://spensir.github.io/charts
 helm repo update
 ```
 
-### Install VRising Server
+### Available Charts
 
+| Chart | Description | Version | Status |
+|-------|-------------|---------|--------|
+| [vrising](./vrising/) | VRising game server | 0.2.0 | ✅ Active |
+
+## 🎮 Supported Game Servers
+
+### VRising
+- **Chart Name**: `vrising`
+- **Game Type**: Survival/Action RPG
+- **Ports**: 9876 (Game), 9877 (Query)
+- **Persistent Storage**: ✅ Supported
+- **Documentation**: [VRising Chart README](./vrising/README.md)
+
+**Quick Install:**
 ```bash
-# Basic installation
 helm install my-vrising spensir/vrising
-
-# With custom server name
-helm install my-vrising spensir/vrising \
-  --set vrising.env.SERVERNAME="My Awesome VRising Server"
-
-# With custom storage sizes
-helm install my-vrising spensir/vrising \
-  --set vrising.persistence.server.size=20Gi \
-  --set vrising.persistence.world.size=10Gi
 ```
 
-## 📋 Configuration
+## 📋 General Features
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `vrising.env.SERVERNAME` | Published server name | `"My VRising Server"` |
-| `vrising.env.WORLDNAME` | World name | `"world1"` |
-| `vrising.env.TZ` | Timezone | `"UTC"` |
-| `vrising.env.GAMEPORT` | Game UDP port | `"9876"` |
-| `vrising.env.QUERYPORT` | Query UDP port | `"9877"` |
-| `vrising.env.LOGDAYS` | Log file retention days | `"30"` |
-| `vrising.env.BRANCH` | Server version branch | `""` (latest) |
-| `vrising.persistence.enabled` | Enable persistent storage | `true` |
-| `vrising.persistence.server.size` | Server data storage size | `10Gi` |
-| `vrising.persistence.world.size` | World data storage size | `5Gi` |
-| `service.type` | Kubernetes service type | `LoadBalancer` |
+All charts in this repository provide:
 
-## 🎮 Accessing Your Server
+- **Persistent Storage**: Save game data across pod restarts
+- **Configurable Resources**: CPU and memory limits
+- **Service Types**: LoadBalancer, NodePort, ClusterIP support
+- **Environment Variables**: Easy server configuration
+- **Health Checks**: Where supported by the game server
+- **Security Context**: Proper pod security configurations
 
-After installation, get the external IP:
+## 🔧 Common Usage Patterns
 
+### Basic Installation
 ```bash
-kubectl get service my-vrising-vrising
+# Install any game server
+helm install <release-name> spensir/<chart-name>
 ```
 
-Connect to your VRising server using:
-- **Game Port**: 9876 (UDP)
-- **Query Port**: 9877 (UDP)
-
-## 🔧 Advanced Configuration
-
-### Using Custom Values File
-
-Create a `values.yaml` file:
-
-```yaml
-vrising:
-  env:
-    SERVERNAME: "My Custom VRising Server"
-    TZ: "America/New_York"
-    LOGDAYS: "7"
-  persistence:
-    server:
-      size: 50Gi
-      storageClass: "fast-ssd"
-    world:
-      size: 20Gi
-      storageClass: "fast-ssd"
-
-service:
-  type: NodePort
-
-resources:
-  limits:
-    cpu: 2000m
-    memory: 4Gi
-  requests:
-    cpu: 1000m
-    memory: 2Gi
-```
-
-Install with custom values:
-
+### Custom Configuration
 ```bash
-helm install my-vrising spensir/vrising -f values.yaml
+# Install with custom values file
+helm install <release-name> spensir/<chart-name> -f my-values.yaml
+
+# Install with inline configuration
+helm install <release-name> spensir/<chart-name> \
+  --set service.type=NodePort \
+  --set persistence.size=50Gi
 ```
 
-### Using Existing Persistent Volume Claims
-
-```bash
-helm install my-vrising spensir/vrising \
-  --set vrising.persistence.server.existingClaim=my-server-pvc \
-  --set vrising.persistence.world.existingClaim=my-world-pvc
-```
-
-## 🔄 Upgrading
-
+### Upgrading
 ```bash
 helm repo update
-helm upgrade my-vrising spensir/vrising
+helm upgrade <release-name> spensir/<chart-name>
 ```
 
-## 🗑️ Uninstalling
+## 🚀 Automated Publishing
 
-```bash
-helm uninstall my-vrising
-```
+Charts are automatically packaged and published using GitHub Actions when changes are pushed to the repository.
 
-**Note**: This will not delete persistent volume claims. Delete them manually if needed:
+## 📖 Repository Information
 
-```bash
-kubectl delete pvc my-vrising-vrising-server
-kubectl delete pvc my-vrising-vrising-world
-```
-
-## 📖 Chart Information
-
-- **Chart Version**: 0.2.0
-- **App Version**: latest
-- **Docker Image**: `trueosiris/vrising`
-- **Source**: [GitHub](https://github.com/spensir/charts)
+- **Repository URL**: https://spensir.github.io/charts
+- **Source Code**: [GitHub](https://github.com/spensir/charts)
+- **Chart Releaser**: Automated via GitHub Actions
+- **Storage**: GitHub Pages
 
 ## 🤝 Contributing
 
-Feel free to submit issues and pull requests!
+We welcome contributions! Please:
+
+1. Fork the repository
+2. Create a new chart directory under the game name
+3. Follow Helm chart best practices
+4. Include comprehensive documentation
+5. Test your chart thoroughly
+6. Submit a pull request
+
+### Adding a New Game Server
+
+1. Create directory: `game-name/`
+2. Add chart files: `Chart.yaml`, `values.yaml`, `templates/`
+3. Include `README.md` with game-specific documentation
+4. Update this main README to list the new chart
+5. Ensure proper persistent storage configuration
+
+## 📝 License
+
+This project is licensed under the MIT License - see individual chart directories for specific licensing information.
