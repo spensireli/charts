@@ -1,0 +1,133 @@
+# VRising Helm Charts
+
+This repository contains Helm charts for deploying VRising game servers on Kubernetes.
+
+## 🚀 Quick Start
+
+### Add the Helm Repository
+
+```bash
+helm repo add spensir https://spensir.github.io/charts
+helm repo update
+```
+
+### Install VRising Server
+
+```bash
+# Basic installation
+helm install my-vrising spensir/vrising-chart
+
+# With custom server name
+helm install my-vrising spensir/vrising-chart \
+  --set vrising.env.SERVERNAME="My Awesome VRising Server"
+
+# With custom storage sizes
+helm install my-vrising spensir/vrising-chart \
+  --set vrising.persistence.server.size=20Gi \
+  --set vrising.persistence.world.size=10Gi
+```
+
+## 📋 Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `vrising.env.SERVERNAME` | Published server name | `"My VRising Server"` |
+| `vrising.env.WORLDNAME` | World name | `"world1"` |
+| `vrising.env.TZ` | Timezone | `"UTC"` |
+| `vrising.env.GAMEPORT` | Game UDP port | `"9876"` |
+| `vrising.env.QUERYPORT` | Query UDP port | `"9877"` |
+| `vrising.env.LOGDAYS` | Log file retention days | `"30"` |
+| `vrising.env.BRANCH` | Server version branch | `""` (latest) |
+| `vrising.persistence.enabled` | Enable persistent storage | `true` |
+| `vrising.persistence.server.size` | Server data storage size | `10Gi` |
+| `vrising.persistence.world.size` | World data storage size | `5Gi` |
+| `service.type` | Kubernetes service type | `LoadBalancer` |
+
+## 🎮 Accessing Your Server
+
+After installation, get the external IP:
+
+```bash
+kubectl get service my-vrising-vrising-chart
+```
+
+Connect to your VRising server using:
+- **Game Port**: 9876 (UDP)
+- **Query Port**: 9877 (UDP)
+
+## 🔧 Advanced Configuration
+
+### Using Custom Values File
+
+Create a `values.yaml` file:
+
+```yaml
+vrising:
+  env:
+    SERVERNAME: "My Custom VRising Server"
+    TZ: "America/New_York"
+    LOGDAYS: "7"
+  persistence:
+    server:
+      size: 50Gi
+      storageClass: "fast-ssd"
+    world:
+      size: 20Gi
+      storageClass: "fast-ssd"
+
+service:
+  type: NodePort
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+```
+
+Install with custom values:
+
+```bash
+helm install my-vrising spensir/vrising-chart -f values.yaml
+```
+
+### Using Existing Persistent Volume Claims
+
+```bash
+helm install my-vrising spensir/vrising-chart \
+  --set vrising.persistence.server.existingClaim=my-server-pvc \
+  --set vrising.persistence.world.existingClaim=my-world-pvc
+```
+
+## 🔄 Upgrading
+
+```bash
+helm repo update
+helm upgrade my-vrising spensir/vrising-chart
+```
+
+## 🗑️ Uninstalling
+
+```bash
+helm uninstall my-vrising
+```
+
+**Note**: This will not delete persistent volume claims. Delete them manually if needed:
+
+```bash
+kubectl delete pvc my-vrising-vrising-chart-server
+kubectl delete pvc my-vrising-vrising-chart-world
+```
+
+## 📖 Chart Information
+
+- **Chart Version**: 0.2.0
+- **App Version**: latest
+- **Docker Image**: `trueosiris/vrising`
+- **Source**: [GitHub](https://github.com/spensir/charts)
+
+## 🤝 Contributing
+
+Feel free to submit issues and pull requests!

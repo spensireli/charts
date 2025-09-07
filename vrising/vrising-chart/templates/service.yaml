@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vrising-chart.fullname" . }}
+  labels:
+    {{- include "vrising-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.gamePort }}
+      targetPort: game
+      protocol: UDP
+      name: game
+    - port: {{ .Values.service.queryPort }}
+      targetPort: query
+      protocol: UDP
+      name: query
+  selector:
+    {{- include "vrising-chart.selectorLabels" . | nindent 4 }}

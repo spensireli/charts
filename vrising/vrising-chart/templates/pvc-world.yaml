@@ -1,0 +1,18 @@
+{{- if and .Values.vrising.persistence.enabled (not .Values.vrising.persistence.world.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "vrising-chart.fullname" . }}-world
+  labels:
+    {{- include "vrising-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: world-storage
+spec:
+  accessModes:
+    - {{ .Values.vrising.persistence.world.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.vrising.persistence.world.size }}
+  {{- if .Values.vrising.persistence.world.storageClass }}
+  storageClassName: {{ .Values.vrising.persistence.world.storageClass }}
+  {{- end }}
+{{- end }}

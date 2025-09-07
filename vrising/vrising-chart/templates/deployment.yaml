@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vrising-chart.fullname" . }}
+  labels:
+    {{- include "vrising-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "vrising-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "vrising-chart.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "vrising-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: game
+              containerPort: {{ .Values.service.gamePort }}
+              protocol: UDP
+            - name: query
+              containerPort: {{ .Values.service.queryPort }}
+              protocol: UDP
+          env:
+            - name: TZ
+              value: {{ .Values.vrising.env.TZ | quote }}
+            - name: SERVERNAME
+              value: {{ .Values.vrising.env.SERVERNAME | quote }}
+            - name: WORLDNAME
+              value: {{ .Values.vrising.env.WORLDNAME | quote }}
+            - name: GAMEPORT
+              value: {{ .Values.vrising.env.GAMEPORT | quote }}
+            - name: QUERYPORT
+              value: {{ .Values.vrising.env.QUERYPORT | quote }}
+            - name: LOGDAYS
+              value: {{ .Values.vrising.env.LOGDAYS | quote }}
+            {{- if .Values.vrising.env.BRANCH }}
+            - name: BRANCH
+              value: {{ .Values.vrising.env.BRANCH | quote }}
+            {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.vrising.persistence.enabled }}
+            - name: vrising-server-data
+              mountPath: /mnt/vrising/server
+            - name: vrising-world-data
+              mountPath: /mnt/vrising/persistentdata
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.vrising.persistence.enabled }}
+        - name: vrising-server-data
+          persistentVolumeClaim:
+            claimName: {{ if .Values.vrising.persistence.server.existingClaim }}{{ .Values.vrising.persistence.server.existingClaim }}{{ else }}{{ include "vrising-chart.fullname" . }}-server{{ end }}
+        - name: vrising-world-data
+          persistentVolumeClaim:
+            claimName: {{ if .Values.vrising.persistence.world.existingClaim }}{{ .Values.vrising.persistence.world.existingClaim }}{{ else }}{{ include "vrising-chart.fullname" . }}-world{{ end }}
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

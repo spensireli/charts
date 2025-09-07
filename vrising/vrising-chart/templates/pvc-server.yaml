@@ -1,0 +1,18 @@
+{{- if and .Values.vrising.persistence.enabled (not .Values.vrising.persistence.server.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "vrising-chart.fullname" . }}-server
+  labels:
+    {{- include "vrising-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server-storage
+spec:
+  accessModes:
+    - {{ .Values.vrising.persistence.server.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.vrising.persistence.server.size }}
+  {{- if .Values.vrising.persistence.server.storageClass }}
+  storageClassName: {{ .Values.vrising.persistence.server.storageClass }}
+  {{- end }}
+{{- end }}
