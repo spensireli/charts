@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "factorio-chart.fullname" . }}
+  labels:
+    {{- include "factorio-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "factorio-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "factorio-chart.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "factorio-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.service.protocol | lower }}
+              containerPort: {{ .Values.service.port }}
+              protocol: {{ .Values.service.protocol }}
+          env:
+            {{- if .Values.factorio.serverName }}
+            - name: FACTORIO_SERVER_NAME
+              value: {{ .Values.factorio.serverName | quote }}
+            {{- end }}
+            {{- if .Values.factorio.serverDescription }}
+            - name: FACTORIO_SERVER_DESCRIPTION
+              value: {{ .Values.factorio.serverDescription | quote }}
+            {{- end }}
+            {{- if .Values.factorio.gamePassword }}
+            - name: FACTORIO_GAME_PASSWORD
+              value: {{ .Values.factorio.gamePassword | quote }}
+            {{- end }}
+            {{- if .Values.factorio.adminPassword }}
+            - name: FACTORIO_ADMIN_PASSWORD
+              value: {{ .Values.factorio.adminPassword | quote }}
+            {{- end }}
+            {{- if .Values.factorio.username }}
+            - name: FACTORIO_USERNAME
+              value: {{ .Values.factorio.username | quote }}
+            {{- end }}
+            {{- if .Values.factorio.token }}
+            - name: FACTORIO_TOKEN
+              value: {{ .Values.factorio.token | quote }}
+            {{- end }}
+            {{- if .Values.factorio.saveName }}
+            - name: FACTORIO_SAVE_NAME
+              value: {{ .Values.factorio.saveName | quote }}
+            {{- end }}
+            {{- if .Values.factorio.public }}
+            - name: FACTORIO_PUBLIC
+              value: "true"
+            {{- end }}
+            {{- if not .Values.factorio.lan }}
+            - name: FACTORIO_LAN
+              value: "false"
+            {{- end }}
+            {{- if gt (.Values.factorio.maxPlayers | int) 0 }}
+            - name: FACTORIO_MAX_PLAYERS
+              value: {{ .Values.factorio.maxPlayers | quote }}
+            {{- end }}
+            {{- if .Values.factorio.allowCommands }}
+            - name: FACTORIO_ALLOW_COMMANDS
+              value: {{ .Values.factorio.allowCommands | quote }}
+            {{- end }}
+            {{- if .Values.factorio.autosaveInterval }}
+            - name: FACTORIO_AUTOSAVE_INTERVAL
+              value: {{ .Values.factorio.autosaveInterval | quote }}
+            {{- end }}
+            {{- if .Values.factorio.autosaveSlots }}
+            - name: FACTORIO_AUTOSAVE_SLOTS
+              value: {{ .Values.factorio.autosaveSlots | quote }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: {{ include "factorio-chart.fullname" . }}-data
+              mountPath: /factorio
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: {{ include "factorio-chart.fullname" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ include "factorio-chart.fullname" . }}-pvc
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
