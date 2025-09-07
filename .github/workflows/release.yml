@@ -41,15 +41,10 @@ jobs:
       - name: Package charts
         run: |
           mkdir -p .cr-release-packages
-          for chart_dir in */; do
-            if [ -d "$chart_dir" ] && [ "$chart_dir" != ".github/" ]; then
-              chart_name=$(basename "$chart_dir")
-              if [ -d "$chart_dir/$chart_name-chart" ]; then
-                echo "Packaging $chart_name chart..."
-                helm package "$chart_dir/$chart_name-chart" -d .cr-release-packages
-              fi
-            fi
-          done
+          # Package all Helm charts found in the repository
+          find . -name "Chart.yaml" -not -path "./.cr-release-packages/*" | \
+            xargs -I {} dirname {} | \
+            xargs -I {} helm package {} -d .cr-release-packages
 
       - name: Generate index
         run: |
