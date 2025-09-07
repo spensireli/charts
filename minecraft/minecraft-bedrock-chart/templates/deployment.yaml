@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "minecraft-bedrock-chart.fullname" . }}
+  labels:
+    {{- include "minecraft-bedrock-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "minecraft-bedrock-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "minecraft-bedrock-chart.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "minecraft-bedrock-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: bedrock
+              containerPort: {{ .Values.minecraftServer.serverPort }}
+              protocol: UDP
+            {{- if ne .Values.minecraftServer.serverPort .Values.minecraftServer.serverPortv6 }}
+            - name: bedrock-v6
+              containerPort: {{ .Values.minecraftServer.serverPortv6 }}
+              protocol: UDP
+            {{- end }}
+          env:
+            - name: EULA
+              value: {{ .Values.minecraftServer.eula | quote }}
+            - name: SERVER_NAME
+              value: {{ .Values.minecraftServer.serverName | quote }}
+            - name: GAMEMODE
+              value: {{ .Values.minecraftServer.gameMode | quote }}
+            - name: DIFFICULTY
+              value: {{ .Values.minecraftServer.difficulty | quote }}
+            - name: ALLOW_CHEATS
+              value: {{ .Values.minecraftServer.allowCheats | quote }}
+            - name: MAX_PLAYERS
+              value: {{ .Values.minecraftServer.maxPlayers | quote }}
+            - name: LEVEL_NAME
+              value: {{ .Values.minecraftServer.levelName | quote }}
+            {{- if .Values.minecraftServer.levelSeed }}
+            - name: LEVEL_SEED
+              value: {{ .Values.minecraftServer.levelSeed | quote }}
+            {{- end }}
+            - name: LEVEL_TYPE
+              value: {{ .Values.minecraftServer.levelType | quote }}
+            - name: ONLINE_MODE
+              value: {{ .Values.minecraftServer.onlineMode | quote }}
+            - name: WHITE_LIST
+              value: {{ .Values.minecraftServer.whiteList | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.minecraftServer.serverPort | quote }}
+            - name: SERVER_PORTV6
+              value: {{ .Values.minecraftServer.serverPortv6 | quote }}
+            - name: MOTD
+              value: {{ .Values.minecraftServer.motd | quote }}
+            - name: DEFAULT_PLAYER_PERMISSION_LEVEL
+              value: {{ .Values.minecraftServer.defaultPlayerPermissionLevel | quote }}
+            - name: TEXTUREPACK_REQUIRED
+              value: {{ .Values.minecraftServer.texturepackRequired | quote }}
+            - name: FORCE_GAMEMODE
+              value: {{ .Values.minecraftServer.forceGamemode | quote }}
+            - name: PLAYER_IDLE_TIMEOUT
+              value: {{ .Values.minecraftServer.playerIdleTimeout | quote }}
+            - name: MAX_THREADS
+              value: {{ .Values.minecraftServer.maxThreads | quote }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /data
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "minecraft-bedrock-chart.fullname" . }}-data
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

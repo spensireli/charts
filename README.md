@@ -17,6 +17,7 @@ helm repo update
 |-------|-------------|---------|--------|
 | [vrising](./vrising/) | VRising game server | 0.2.0 | ✅ Active |
 | [factorio](./factorio/) | Factorio game server | 0.1.0 | ✅ Active |
+| [minecraft-bedrock](./minecraft/) | Minecraft Bedrock Edition server | 0.1.0 | ✅ Active |
 
 ## 🎮 Supported Game Servers
 
@@ -42,6 +43,18 @@ helm install my-vrising spensireli/vrising
 **Quick Install:**
 ```bash
 helm install my-factorio spensireli/factorio-chart
+```
+
+### Minecraft Bedrock Edition
+- **Chart Name**: `minecraft-bedrock-chart`
+- **Game Type**: Sandbox/Survival
+- **Ports**: 19132 (Game), 19133 (IPv6)
+- **Persistent Storage**: ✅ Supported
+- **Documentation**: [Minecraft Bedrock Chart README](./minecraft/README.md)
+
+**Quick Install:**
+```bash
+helm install my-minecraft spensireli/minecraft-bedrock-chart
 ```
 
 ## 📋 General Features
@@ -104,11 +117,12 @@ We welcome contributions! Please:
 
 ### Adding a New Game Server
 
-1. Create directory: `game-name/`
+1. Create directory: `game-name/chart-name/` (e.g., `minecraft/minecraft-bedrock-chart/`)
 2. Add chart files: `Chart.yaml`, `values.yaml`, `templates/`
-3. Include `README.md` with game-specific documentation
+3. Include comprehensive `README.md` with game-specific documentation
 4. Update this main README to list the new chart
 5. Ensure proper persistent storage configuration
+6. Follow existing chart patterns for consistency
 
 ## 📝 License
 

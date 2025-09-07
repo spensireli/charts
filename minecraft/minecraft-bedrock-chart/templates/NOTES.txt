@@ -1,0 +1,33 @@
+🎮 Minecraft Bedrock Server has been deployed!
+
+Server Details:
+- Server Name: {{ .Values.minecraftServer.serverName }}
+- Game Mode: {{ .Values.minecraftServer.gameMode }}
+- Difficulty: {{ .Values.minecraftServer.difficulty }}
+- Max Players: {{ .Values.minecraftServer.maxPlayers }}
+
+Connection Information:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "minecraft-bedrock-chart.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Connect to: $NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "minecraft-bedrock-chart.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "minecraft-bedrock-chart.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "Connect to: $SERVICE_IP:{{ .Values.service.port }}"
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "minecraft-bedrock-chart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "To connect from outside the cluster, use port-forward:"
+  echo "kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME {{ .Values.service.port }}:{{ .Values.service.port }}"
+  echo "Then connect to: localhost:{{ .Values.service.port }}"
+{{- end }}
+
+To view server logs:
+  kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "minecraft-bedrock-chart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -f
+
+{{- if .Values.persistence.enabled }}
+Server data is persisted using a {{ .Values.persistence.size }} PVC.
+{{- else }}
+⚠️  WARNING: Server data is not persisted. Enable persistence to keep your world data!
+{{- end }}
