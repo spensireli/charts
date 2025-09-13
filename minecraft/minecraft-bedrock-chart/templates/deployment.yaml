@@ -84,6 +84,9 @@ spec:
               value: {{ .Values.minecraftServer.playerIdleTimeout | quote }}
             - name: MAX_THREADS
               value: {{ .Values.minecraftServer.maxThreads | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

@@ -74,6 +74,15 @@ minecraftServer:
   playerIdleTimeout: 30
   maxThreads: 8
 
+# Additional environment variables
+# These will be added to the container environment
+extraEnv: []
+# Example:
+# - name: VERSION
+#   value: "1.20.1"
+# - name: CUSTOM_VAR
+#   value: "custom_value"
+
 service:
   type: LoadBalancer
   port: 19132

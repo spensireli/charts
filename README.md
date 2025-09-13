@@ -17,7 +17,7 @@ helm repo update
 |-------|-------------|---------|--------|
 | [vrising](./vrising/) | VRising game server | 0.2.0 | ✅ Active |
 | [factorio](./factorio/) | Factorio game server | 0.1.0 | ✅ Active |
-| [minecraft-bedrock](./minecraft/) | Minecraft Bedrock Edition server | 0.1.0 | ✅ Active |
+| [minecraft-bedrock](./minecraft/) | Minecraft Bedrock Edition server | 0.3.0 | ✅ Active |
 
 ## 🎮 Supported Game Servers
 
