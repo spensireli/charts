@@ -103,23 +103,6 @@ persistence:
   size: 1Gi
   # storageClass: ""
 
-# Probes configuration (Minecraft doesn't use HTTP)
-livenessProbe:
-  tcpSocket:
-    port: 19132
-  initialDelaySeconds: 120
-  periodSeconds: 20
-  timeoutSeconds: 5
-  failureThreshold: 3
-
-readinessProbe:
-  tcpSocket:
-    port: 19132
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
-
 # Autoscaling is not applicable for Minecraft servers
 # Minecraft servers should run as a single instance to maintain world state consistency
 
