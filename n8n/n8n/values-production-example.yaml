@@ -1,0 +1,160 @@
+# Production example configuration for n8n
+# Copy this file and customize for your environment
+
+replicaCount: 1
+
+image:
+  repository: n8nio/n8n
+  pullPolicy: IfNotPresent
+  tag: ""  # Uses appVersion from Chart.yaml
+
+# n8n specific configuration
+n8n:
+  # IMPORTANT: Generate a secure encryption key
+  # openssl rand -base64 32
+  encryptionKey: "CHANGE-ME-TO-SECURE-KEY"
+  
+  # Set this to your external n8n URL (required for webhooks)
+  webhookUrl: "https://n8n.yourdomain.com/"
+  
+  # Enable basic authentication for the editor
+  basicAuth:
+    enabled: true
+    user: "admin"
+    password: "CHANGE-ME-TO-SECURE-PASSWORD"
+  
+  # Configure timezone
+  timezone: "America/New_York"
+  genericTimezone: "America/New_York"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5678
+
+# Ingress configuration with TLS
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  hosts:
+    - host: n8n.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: n8n-tls
+      hosts:
+        - n8n.yourdomain.com
+
+# Persistent storage
+persistence:
+  enabled: true
+  # storageClass: "fast-ssd"  # Uncomment and set your storage class
+  accessMode: ReadWriteOnce
+  size: 20Gi
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2048Mi
+  requests:
+    cpu: 500m
+    memory: 1024Mi
+
+# Health check configuration
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Autoscaling (optional)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+# PostgreSQL database (recommended for production)
+postgresql:
+  enabled: true
+  auth:
+    username: n8n
+    password: "CHANGE-ME-TO-SECURE-DB-PASSWORD"
+    database: n8n
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+      # storageClass: "fast-ssd"  # Uncomment and set your storage class
+
+# Additional environment variables (optional)
+env:
+  - name: N8N_LOG_LEVEL
+    value: "info"
+  - name: N8N_EDITOR_BASE_URL
+    value: "https://n8n.yourdomain.com"
+  - name: EXECUTIONS_PROCESS
+    value: "main"
+  - name: EXECUTIONS_DATA_PRUNE
+    value: "true"
+  - name: EXECUTIONS_DATA_MAX_AGE
+    value: "168"  # Keep execution data for 7 days
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# Node selection (optional)
+nodeSelector: {}
+  # node-role: worker
+
+# Tolerations (optional)
+tolerations: []
+  # - key: "key"
+  #   operator: "Equal"
+  #   value: "value"
+  #   effect: "NoSchedule"
+
+# Affinity rules (optional)
+affinity: {}
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #         - key: app.kubernetes.io/name
+  #           operator: In
+  #           values:
+  #           - n8n
+  #       topologyKey: kubernetes.io/hostname
+
